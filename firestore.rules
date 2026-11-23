@@ -1,0 +1,322 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // Hardened Global Primitives
+    // =========================================================================
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isMainAdmin() {
+      return isVerified() && (
+        request.auth.token.email == 'ayushriva123@gmail.com' ||
+        (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'MAIN_ADMIN'
+        )
+      );
+    }
+
+    function isAdmin() {
+      return isMainAdmin() || (
+        isVerified() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'
+      );
+    }
+
+    // =========================================================================
+    // Entity Validation Blueprints
+    // =========================================================================
+    function isValidUserProfile(data) {
+      return data.keys().hasAll([
+          'uid', 'name', 'email', 'role', 'authProvider',
+          'studentId', 'department', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'uid', 'name', 'email', 'role', 'authProvider',
+          'studentId', 'department', 'inviteId', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+        && data.email is string && data.email.size() >= 5 && data.email.size() <= 150
+        && data.role in ['MAIN_ADMIN', 'ADMIN', 'STUDENT']
+        && data.authProvider == 'GOOGLE'
+        && data.studentId is string && data.studentId.size() <= 50
+        && data.department is string && data.department.size() <= 100
+        && (!('inviteId' in data) || isValidId(data.inviteId))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidRoleInvite(data) {
+      return data.keys().hasAll([
+          'id', 'name', 'email', 'role', 'studentId',
+          'department', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'name', 'email', 'role', 'studentId',
+          'department', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+        && data.email is string && data.email.size() >= 5 && data.email.size() <= 150
+        && data.role in ['ADMIN', 'STUDENT']
+        && data.studentId is string && data.studentId.size() <= 50
+        && data.department is string && data.department.size() <= 100
+        && isValidId(data.createdBy)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidComplaint(data) {
+      return data.keys().hasAll([
+          'id', 'refCode', 'userId', 'studentName', 'studentEmail',
+          'title', 'category', 'description', 'proofImage',
+          'status', 'adminRemarks', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'refCode', 'userId', 'studentName', 'studentEmail',
+          'title', 'category', 'description', 'proofImage',
+          'status', 'adminRemarks', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.refCode is string && data.refCode.size() >= 4 && data.refCode.size() <= 20
+        && isValidId(data.userId)
+        && data.studentName is string && data.studentName.size() >= 2 && data.studentName.size() <= 100
+        && data.studentEmail is string && data.studentEmail.size() >= 5 && data.studentEmail.size() <= 150
+        && data.title is string && data.title.size() >= 5 && data.title.size() <= 150
+        && data.category in [
+          'Hostel & Accommodation',
+          'IT & Network',
+          'Academics & Faculty',
+          'Library & Labs',
+          'Canteen & Hygiene',
+          'Infrastructure & Maintenance',
+          'Transport',
+          'Administration',
+          'Other'
+        ]
+        && data.description is string && data.description.size() >= 15 && data.description.size() <= 2000
+        && data.proofImage is string && data.proofImage.size() >= 10 && data.proofImage.size() <= 650000
+        && data.status in ['Pending', 'In Progress', 'Resolved']
+        && data.adminRemarks is string && data.adminRemarks.size() <= 1000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidEmailNotification(data) {
+      return data.keys().hasAll([
+          'id', 'complaintId', 'refCode', 'studentUserId', 'recipientEmail',
+          'studentName', 'complaintTitle', 'triggeredStatus', 'subject',
+          'bodyPreview', 'deliveryStatus', 'gmailMessageId', 'errorMessage',
+          'triggeredByUid', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'complaintId', 'refCode', 'studentUserId', 'recipientEmail',
+          'studentName', 'complaintTitle', 'triggeredStatus', 'subject',
+          'bodyPreview', 'deliveryStatus', 'gmailMessageId', 'errorMessage',
+          'triggeredByUid', 'createdAt'
+        ])
+        && isValidId(data.id)
+        && isValidId(data.complaintId)
+        && data.refCode is string && data.refCode.size() >= 4 && data.refCode.size() <= 20
+        && isValidId(data.studentUserId)
+        && data.recipientEmail is string && data.recipientEmail.size() >= 5 && data.recipientEmail.size() <= 150
+        && data.studentName is string && data.studentName.size() >= 2 && data.studentName.size() <= 100
+        && data.complaintTitle is string && data.complaintTitle.size() >= 5 && data.complaintTitle.size() <= 150
+        && data.triggeredStatus in ['In Progress', 'Resolved']
+        && data.subject is string && data.subject.size() >= 5 && data.subject.size() <= 200
+        && data.bodyPreview is string && data.bodyPreview.size() >= 10 && data.bodyPreview.size() <= 1000
+        && data.deliveryStatus in ['SENT', 'FAILED', 'PENDING_AUTH']
+        && data.gmailMessageId is string && data.gmailMessageId.size() <= 128
+        && data.errorMessage is string && data.errorMessage.size() <= 500
+        && isValidId(data.triggeredByUid)
+        && data.createdAt is timestamp;
+    }
+
+    // =========================================================================
+    // Collection: /users/{userId}
+    // =========================================================================
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isVerified() && (isOwner(userId) || isAdmin());
+      allow list: if isVerified() && (isAdmin() || resource.data.uid == request.auth.uid);
+
+      allow create: if isValidId(userId)
+        && isVerified()
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == request.auth.uid
+        && incoming().email == request.auth.token.email
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && (
+          incoming().role == 'STUDENT' ||
+          (request.auth.token.email == 'ayushriva123@gmail.com' && incoming().role == 'MAIN_ADMIN') ||
+          (
+            'inviteId' in incoming() &&
+            isValidId(incoming().inviteId) &&
+            exists(/databases/$(database)/documents/roleInvites/$(incoming().inviteId)) &&
+            get(/databases/$(database)/documents/roleInvites/$(incoming().inviteId)).data.email == request.auth.token.email &&
+            get(/databases/$(database)/documents/roleInvites/$(incoming().inviteId)).data.role == incoming().role
+          )
+        );
+
+      allow update: if isValidId(userId)
+        && isVerified()
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email
+        && incoming().authProvider == existing().authProvider
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Main Admin reassigns ADMIN or STUDENT role (cannot modify MAIN_ADMIN or self)
+          (
+            isMainAdmin() &&
+            !isOwner(userId) &&
+            existing().role != 'MAIN_ADMIN' &&
+            incoming().role in ['ADMIN', 'STUDENT'] &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['role', 'updatedAt'])
+          ) ||
+          // Action 2: Owner updates personal profile fields (role remains immutable)
+          (
+            isOwner(userId) &&
+            incoming().role == existing().role &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['name', 'studentId', 'department', 'updatedAt'])
+          )
+        );
+
+      allow delete: if isValidId(userId)
+        && isMainAdmin()
+        && !isOwner(userId)
+        && existing().role != 'MAIN_ADMIN';
+    }
+
+    // =========================================================================
+    // Collection: /roleInvites/{inviteId}
+    // =========================================================================
+    match /roleInvites/{inviteId} {
+      allow get: if isValidId(inviteId)
+        && isVerified()
+        && (isMainAdmin() || existing().email == request.auth.token.email);
+      allow list: if isVerified() && (isMainAdmin() || resource.data.email == request.auth.token.email);
+
+      allow create: if isValidId(inviteId)
+        && isMainAdmin()
+        && isValidRoleInvite(incoming())
+        && incoming().id == inviteId
+        && incoming().createdBy == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(inviteId)
+        && isMainAdmin()
+        && isValidRoleInvite(incoming())
+        && incoming().id == existing().id
+        && incoming().email == existing().email
+        && incoming().createdBy == existing().createdBy
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['role', 'name', 'studentId', 'department', 'updatedAt']);
+
+      allow delete: if isValidId(inviteId) && isMainAdmin();
+    }
+
+    // =========================================================================
+    // Collection: /complaints/{complaintId}
+    // =========================================================================
+    match /complaints/{complaintId} {
+      allow get: if isValidId(complaintId)
+        && isVerified()
+        && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isVerified() && (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isValidId(complaintId)
+        && isVerified()
+        && isValidComplaint(incoming())
+        && incoming().id == complaintId
+        && incoming().userId == request.auth.uid
+        && incoming().studentEmail == request.auth.token.email
+        && incoming().status == 'Pending'
+        && incoming().adminRemarks == ''
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(complaintId)
+        && isAdmin()
+        && isValidComplaint(incoming())
+        && incoming().id == existing().id
+        && incoming().refCode == existing().refCode
+        && incoming().userId == existing().userId
+        && incoming().studentEmail == existing().studentEmail
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'adminRemarks', 'updatedAt']);
+
+      allow delete: if isValidId(complaintId) && isAdmin();
+    }
+
+    // =========================================================================
+    // Collection: /emailNotifications/{notificationId}
+    // =========================================================================
+    match /emailNotifications/{notificationId} {
+      allow get: if isValidId(notificationId)
+        && isVerified()
+        && (existing().studentUserId == request.auth.uid || isAdmin());
+      allow list: if isVerified() && (resource.data.studentUserId == request.auth.uid || isAdmin());
+
+      allow create: if isValidId(notificationId)
+        && isAdmin()
+        && isValidEmailNotification(incoming())
+        && incoming().id == notificationId
+        && incoming().triggeredByUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && exists(/databases/$(database)/documents/complaints/$(incoming().complaintId))
+        && get(/databases/$(database)/documents/complaints/$(incoming().complaintId)).data.userId == incoming().studentUserId
+        && get(/databases/$(database)/documents/complaints/$(incoming().complaintId)).data.studentEmail == incoming().recipientEmail;
+
+      allow update: if isValidId(notificationId)
+        && isAdmin()
+        && isValidEmailNotification(incoming())
+        && incoming().id == existing().id
+        && incoming().complaintId == existing().complaintId
+        && incoming().refCode == existing().refCode
+        && incoming().studentUserId == existing().studentUserId
+        && incoming().recipientEmail == existing().recipientEmail
+        && incoming().triggeredByUid == existing().triggeredByUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly(['deliveryStatus', 'gmailMessageId', 'errorMessage']);
+
+      allow delete: if isValidId(notificationId) && isAdmin();
+    }
+  }
+}
