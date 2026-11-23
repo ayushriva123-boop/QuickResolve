@@ -25,6 +25,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--qr-bg);
@@ -45,14 +50,31 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.preview-strip-scroll {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+.preview-strip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .preview-strip .btn-preview {
   color: #CBD5E1;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.06);
   font-size: 0.75rem;
-  padding: 0.22rem 0.65rem;
+  padding: 0.24rem 0.68rem;
   border-radius: 7px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .preview-strip .btn-preview:hover,
@@ -333,16 +355,141 @@ body {
   color: #FFFFFF;
 }
 
+/* Tablet Landscape (992px - 1199px): compact sidebar so data grids stay wide */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  :root {
+    --qr-sidebar-width: 222px;
+  }
+  .app-content {
+    padding: 1.35rem;
+  }
+  .app-topbar {
+    padding: 0.85rem 1.35rem;
+  }
+}
+
+/* Tablet Portrait & Mobile (< 992px): collapsible offcanvas drawer */
 @media (max-width: 991.98px) {
   .app-sidebar {
     display: none;
   }
   .app-content {
-    padding: 1.15rem;
+    padding: 1.25rem;
   }
   .app-topbar {
     padding: 0.8rem 1rem;
   }
+}
+
+/* Mobile (< 768px): thumb-zone bottom bar, fluid cards, touch targets */
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-complaint-card {
+  background: var(--qr-surface);
+  border: 1px solid var(--qr-border);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: var(--qr-shadow-sm);
+}
+
+@media (max-width: 767.98px) {
+  .app-content {
+    padding: 1rem 0.9rem calc(5.25rem + env(safe-area-inset-bottom));
+  }
+  .app-topbar {
+    padding: 0.68rem 0.9rem;
+  }
+  .landing-navbar {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+  }
+  .stat-card {
+    padding: 1rem;
+  }
+  .stat-value {
+    font-size: 1.55rem;
+  }
+  .auth-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .form-control,
+  .form-select {
+    font-size: 16px;
+    min-height: 44px;
+  }
+  .team-filter-group {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    max-width: 100%;
+  }
+  .team-filter-group::-webkit-scrollbar {
+    display: none;
+  }
+  .team-filter-btn {
+    min-height: 40px;
+    flex-shrink: 0;
+  }
+  .mobile-bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--qr-border);
+    padding: 0.35rem 0.4rem calc(0.35rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(11, 31, 77, 0.08);
+  }
+  .mobile-bottom-nav-btn {
+    border: 0;
+    background: transparent;
+    color: #64748B;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 48px;
+    padding: 0.25rem 0.2rem;
+    border-radius: 10px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.1;
+    transition: color 0.16s ease, background-color 0.16s ease, transform 0.14s ease;
+  }
+  .mobile-bottom-nav-btn i {
+    font-size: 1.15rem;
+  }
+  .mobile-bottom-nav-btn span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mobile-bottom-nav-btn.active {
+    color: var(--qr-blue-600);
+    background: rgba(37, 99, 235, 0.08);
+  }
+  .mobile-bottom-nav-btn:active {
+    transform: scale(0.96);
+  }
+}
+
+/* Coarse-pointer touch targets across phones and tablets */
+html[data-touch='true'] .sidebar-link,
+html[data-touch='true'] .team-social-link,
+html[data-touch='true'] .btn-navy,
+html[data-touch='true'] .btn-outline-navy {
+  min-height: 44px;
 }
 
 /* Cards, Tables & Badges */

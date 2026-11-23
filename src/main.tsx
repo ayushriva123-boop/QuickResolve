@@ -620,9 +620,9 @@ function renderPreviewStrip(): string {
   const p = state.page;
   const user = state.currentUser;
   return `
-    <div class="preview-strip py-2 px-3">
-      <div class="container-fluid d-flex flex-wrap align-items-center justify-content-end gap-2">
-        <div class="d-flex flex-wrap align-items-center gap-1">
+    <div class="preview-strip py-2 px-2 px-md-3">
+      <div class="container-fluid px-1 px-md-2 d-flex align-items-center justify-content-md-end">
+        <div class="preview-strip-scroll">
           <button type="button" class="btn btn-preview ${p === 'landing' ? 'active' : ''}" data-nav="landing">Landing</button>
           ${
             !user
@@ -693,11 +693,11 @@ function renderLanding(): string {
               <i class="bi bi-shield-check"></i>
               <span>Campus Grievance &amp; Resolution Platform</span>
             </div>
-            <h1 class="display-4 fw-bold lh-sm mb-3">Your Voice Matters. We Make It Happen.</h1>
+            <h1 class="display-4 fw-bold lh-sm mb-3 headline-balance" style="font-size: clamp(1.9rem, 4.2vw, 3.25rem);">Your Voice Matters. We Make It Happen.</h1>
             <p class="lead text-white-50 mb-4" style="max-width: 540px;">
               Report campus issues, track resolutions, and help create a better campus experience.
             </p>
-            <div class="d-flex flex-wrap gap-3 mb-4">
+            <div class="d-flex flex-column flex-sm-row flex-wrap gap-3 mb-4">
               <button type="button" class="btn btn-light btn-lg fw-semibold px-4 text-primary" data-nav="${user ? 'submit-complaint' : 'login'}">
                 <i class="bi bi-plus-circle-fill me-2"></i>Submit a Complaint
               </button>
@@ -956,15 +956,20 @@ function renderLegalShell(activeTab: 'terms' | 'privacy', title: string, subtitl
           ${LOGO_SVG}
           <span class="fs-5">QuickResolve</span>
         </a>
-        <div class="d-flex flex-wrap align-items-center gap-2">
-          <a href="#team" class="btn btn-sm btn-light border text-nowrap" data-nav="team">Our Team</a>
-          <a href="#terms" class="btn btn-sm text-nowrap ${activeTab === 'terms' ? 'btn-navy' : 'btn-outline-navy'}" data-nav="terms">Terms &amp; Conditions</a>
-          <a href="#privacy" class="btn btn-sm text-nowrap ${activeTab === 'privacy' ? 'btn-navy' : 'btn-outline-navy'}" data-nav="privacy">Privacy Policy</a>
-          ${
-            user
-              ? `<button type="button" class="btn btn-sm btn-light border text-nowrap" data-nav="${defaultDashboardFor(user)}">Dashboard</button>`
-              : `<button type="button" class="btn btn-sm btn-light border text-nowrap" data-nav="landing">Back to Home</button>`
-          }
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#legalNav" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="legalNav">
+          <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 ms-lg-auto pt-3 pt-lg-0">
+            <a href="#team" class="btn btn-sm btn-light border text-nowrap" data-nav="team">Our Team</a>
+            <a href="#terms" class="btn btn-sm text-nowrap ${activeTab === 'terms' ? 'btn-navy' : 'btn-outline-navy'}" data-nav="terms">Terms &amp; Conditions</a>
+            <a href="#privacy" class="btn btn-sm text-nowrap ${activeTab === 'privacy' ? 'btn-navy' : 'btn-outline-navy'}" data-nav="privacy">Privacy Policy</a>
+            ${
+              user
+                ? `<button type="button" class="btn btn-sm btn-light border text-nowrap" data-nav="${defaultDashboardFor(user)}">Dashboard</button>`
+                : `<button type="button" class="btn btn-sm btn-light border text-nowrap" data-nav="landing">Back to Home</button>`
+            }
+          </div>
         </div>
       </div>
     </nav>
@@ -1157,23 +1162,28 @@ function renderTeamPage(): string {
 
   return `
     <nav class="navbar navbar-expand-lg landing-navbar sticky-top py-3">
-      <div class="container d-flex align-items-center justify-content-between gap-4">
+      <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-dark text-nowrap" href="#" data-nav="landing">
           ${LOGO_SVG}
           <span class="fs-5">QuickResolve</span>
         </a>
-        <div class="d-none d-md-flex align-items-center gap-4">
-          <a href="#" class="nav-link fw-medium text-muted text-nowrap" data-nav="landing">Home</a>
-          <a href="#team" class="nav-link fw-semibold text-primary text-nowrap" data-nav="team">Our Team</a>
-          <a href="#terms" class="nav-link fw-medium text-muted text-nowrap" data-nav="terms">Terms</a>
-          <a href="#privacy" class="nav-link fw-medium text-muted text-nowrap" data-nav="privacy">Privacy</a>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          ${
-            user
-              ? `<button type="button" class="btn btn-navy btn-sm text-nowrap" data-nav="${defaultDashboardFor(user)}">Open Dashboard</button>`
-              : `<button type="button" class="btn btn-navy btn-sm text-nowrap" data-nav="login">Sign In</button>`
-          }
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#teamNav" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="teamNav">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-3 pt-2 pt-lg-0">
+            <li class="nav-item"><a href="#" class="nav-link fw-medium text-muted text-nowrap" data-nav="landing">Home</a></li>
+            <li class="nav-item"><a href="#team" class="nav-link fw-semibold text-primary text-nowrap" data-nav="team">Our Team</a></li>
+            <li class="nav-item"><a href="#terms" class="nav-link fw-medium text-muted text-nowrap" data-nav="terms">Terms</a></li>
+            <li class="nav-item"><a href="#privacy" class="nav-link fw-medium text-muted text-nowrap" data-nav="privacy">Privacy</a></li>
+          </ul>
+          <div class="d-flex align-items-center gap-2 pt-2 pt-lg-0">
+            ${
+              user
+                ? `<button type="button" class="btn btn-navy btn-sm text-nowrap" data-nav="${defaultDashboardFor(user)}">Open Dashboard</button>`
+                : `<button type="button" class="btn btn-navy btn-sm text-nowrap" data-nav="login">Sign In</button>`
+            }
+          </div>
         </div>
       </div>
     </nav>
@@ -1244,7 +1254,7 @@ function renderTeamPage(): string {
           ${visibleMembers
             .map(
               (m, idx) => `
-              <div class="col-sm-6 col-xl-3 team-reveal" style="--stagger: ${idx + 1};">
+              <div class="col-12 col-sm-6 col-xl-3 team-reveal" style="--stagger: ${idx + 1};">
                 <article class="team-card">
                   <div class="team-photo-frame">
                     <img
@@ -1422,6 +1432,45 @@ function renderSidebarLinks(user: UserProfileDoc): string {
   `;
 }
 
+function renderMobileBottomNav(user: UserProfileDoc): string {
+  const p = state.page;
+  const items: { page: PageKey; icon: string; label: string }[] = isMainAdmin(user)
+    ? [
+        { page: 'admin-dashboard', icon: 'bi-grid-1x2-fill', label: 'Overview' },
+        { page: 'manage-complaints', icon: 'bi-kanban-fill', label: 'Complaints' },
+        { page: 'manage-users', icon: 'bi-person-badge-fill', label: 'Users' },
+        { page: 'profile', icon: 'bi-person-gear', label: 'Profile' },
+      ]
+    : isAdminOrMain(user)
+      ? [
+          { page: 'admin-dashboard', icon: 'bi-grid-1x2-fill', label: 'Overview' },
+          { page: 'manage-complaints', icon: 'bi-kanban-fill', label: 'Complaints' },
+          { page: 'manage-students', icon: 'bi-people-fill', label: 'Students' },
+          { page: 'profile', icon: 'bi-person-gear', label: 'Profile' },
+        ]
+      : [
+          { page: 'student-dashboard', icon: 'bi-grid-1x2-fill', label: 'Home' },
+          { page: 'submit-complaint', icon: 'bi-plus-circle-fill', label: 'Submit' },
+          { page: 'my-complaints', icon: 'bi-journal-text', label: 'History' },
+          { page: 'profile', icon: 'bi-person-gear', label: 'Profile' },
+        ];
+
+  return `
+    <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
+      ${items
+        .map(
+          (item) => `
+            <button type="button" class="mobile-bottom-nav-btn ${p === item.page ? 'active' : ''}" data-nav="${item.page}">
+              <i class="bi ${item.icon}"></i>
+              <span>${item.label}</span>
+            </button>
+          `
+        )
+        .join('')}
+    </nav>
+  `;
+}
+
 function renderDashboardShell(title: string, subtitle: string, bodyHtml: string): string {
   const user = state.currentUser!;
   const links = renderSidebarLinks(user);
@@ -1471,16 +1520,16 @@ function renderDashboardShell(title: string, subtitle: string, bodyHtml: string)
 
       <div class="app-main">
         <header class="app-topbar">
-          <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-outline-secondary d-lg-none btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+          <div class="d-flex align-items-center gap-2 gap-md-3 min-w-0">
+            <button class="btn btn-outline-secondary d-lg-none btn-sm flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-label="Open menu">
               <i class="bi bi-list fs-5"></i>
             </button>
-            <div>
-              <h1 class="h5 mb-0 fw-bold text-dark">${esc(title)}</h1>
-              <div class="text-muted small d-none d-sm-block">${esc(subtitle)}</div>
+            <div class="min-w-0">
+              <h1 class="h5 mb-0 fw-bold text-dark text-truncate">${esc(title)}</h1>
+              <div class="text-muted small d-none d-sm-block text-truncate">${esc(subtitle)}</div>
             </div>
           </div>
-          <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2 gap-md-3 flex-shrink-0">
             ${
               user.role === 'STUDENT' || isMainAdmin(user)
                 ? `<button type="button" class="btn btn-navy btn-sm d-none d-md-inline-flex align-items-center gap-1" data-nav="submit-complaint"><i class="bi bi-plus-lg"></i><span>New Complaint</span></button>`
@@ -1499,6 +1548,7 @@ function renderDashboardShell(title: string, subtitle: string, bodyHtml: string)
           ${renderFlash()}
           ${bodyHtml}
         </main>
+        ${renderMobileBottomNav(user)}
       </div>
     </div>
   `;
@@ -1569,6 +1619,39 @@ function renderStudentDashboardRows(rows: ComplaintDoc[], totalMine: number, que
     .join('');
 }
 
+function renderStudentDashboardMobileCards(rows: ComplaintDoc[], totalMine: number, query: string): string {
+  if (totalMine === 0) {
+    return '<div class="text-center py-4 px-3 text-muted small qr-row-animate">No complaints submitted yet. Tap Submit Complaint to file your first issue.</div>';
+  }
+  if (rows.length === 0) {
+    return `<div class="text-center py-4 px-3 text-muted small qr-row-animate"><i class="bi bi-search me-2"></i>No complaints matching &ldquo;${esc(query)}&rdquo;.</div>`;
+  }
+  return rows
+    .map(
+      (c, idx) => `
+        <div class="mobile-complaint-card qr-row-animate" style="--qr-row: ${Math.min(idx, 8)};">
+          <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+            <span class="small fw-semibold text-muted tabular-nums">${esc(c.refCode)} &middot; ${esc(c.category)}</span>
+            ${statusBadge(c.status)}
+          </div>
+          <div class="fw-bold text-dark mb-1">${esc(c.title)}</div>
+          <div class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            ${esc(c.description)}
+          </div>
+          <div class="d-flex align-items-center justify-content-between gap-2 pt-2 border-top">
+            <div class="d-flex align-items-center gap-2 small text-muted">
+              ${proofBadge(Boolean(c.proofImage))}
+              <span>${esc(formatFirestoreDate(c.createdAt))}</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-navy" data-open-detail="${esc(c.id)}">
+              <i class="bi bi-eye me-1"></i>Details
+            </button>
+          </div>
+        </div>`
+    )
+    .join('');
+}
+
 function renderStudentDashboard(): string {
   const user = state.currentUser!;
   const { mine, q, hasQuery, matching, rows } = getStudentDashboardDisplayData(user.uid);
@@ -1577,17 +1660,17 @@ function renderStudentDashboard(): string {
   const resolved = mine.filter((c) => c.status === 'Resolved').length;
 
   const body = `
-    <div class="saas-card p-4 mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 qr-animate-in"
+    <div class="saas-card p-3 p-md-4 mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 qr-animate-in"
          style="--qr-stagger: 0; background: linear-gradient(120deg, #0B1F4D 0%, #1B3F91 100%); color: #fff;">
       <div>
         <h4 class="fw-bold mb-1">Welcome back, ${esc(user.name)}!</h4>
         <p class="text-white-50 mb-0 small">Track your submitted complaints or report a new campus issue with photo proof.</p>
       </div>
-      <div class="d-flex gap-2 flex-shrink-0">
-        <button type="button" class="btn btn-light fw-semibold text-primary" data-nav="submit-complaint">
+      <div class="d-flex flex-wrap gap-2 flex-shrink-0">
+        <button type="button" class="btn btn-light fw-semibold text-primary flex-grow-1 flex-sm-grow-0" data-nav="submit-complaint">
           <i class="bi bi-plus-circle-fill me-1"></i> Submit Complaint
         </button>
-        <button type="button" class="btn btn-outline-light fw-semibold" data-nav="my-complaints">View All</button>
+        <button type="button" class="btn btn-outline-light fw-semibold flex-grow-1 flex-sm-grow-0" data-nav="my-complaints">View All</button>
       </div>
     </div>
 
@@ -1599,13 +1682,13 @@ function renderStudentDashboard(): string {
     </div>
 
     <div class="saas-card overflow-hidden qr-animate-in" style="--qr-stagger: 3;">
-      <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 p-4 border-bottom">
+      <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 p-3 p-md-4 border-bottom">
         <div>
           <h5 class="fw-bold mb-0">Complaint History</h5>
           <div id="studentDashResultMeta" class="text-muted small">${renderStudentDashboardMeta(mine.length, matching.length, hasQuery)}</div>
         </div>
         <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
-          <form id="studentDashSearchForm" class="input-group qr-search-group flex-grow-1" style="width: 100%; min-width: 220px; max-width: 340px;">
+          <form id="studentDashSearchForm" class="input-group qr-search-group flex-grow-1" style="width: 100%; min-width: 0; max-width: 340px;">
             <span class="input-group-text bg-white border-end-0 text-muted">
               <i class="bi bi-search"></i>
             </span>
@@ -1630,7 +1713,12 @@ function renderStudentDashboard(): string {
           <button type="button" class="btn btn-sm btn-outline-navy flex-shrink-0 py-2 px-3" data-nav="my-complaints">Full History</button>
         </div>
       </div>
-      <div class="table-responsive">
+
+      <div class="d-md-none p-3 d-flex flex-column gap-3" id="studentDashMobileList">
+        ${renderStudentDashboardMobileCards(rows, mine.length, q)}
+      </div>
+
+      <div class="table-responsive d-none d-md-block">
         <table class="table table-modern mb-0">
           <thead>
             <tr><th>ID</th><th>Title</th><th>Category</th><th>Proof</th><th>Status</th><th>Submitted</th><th class="text-end">Action</th></tr>
@@ -1738,11 +1826,41 @@ function renderMyComplaints(): string {
     </div>
 
     <div class="saas-card overflow-hidden qr-animate-in" style="--qr-stagger: 1;">
-      <div class="d-flex align-items-center justify-content-between p-4 border-bottom">
+      <div class="d-flex align-items-center justify-content-between p-3 p-md-4 border-bottom">
         <h5 class="fw-bold mb-0">Complaint History</h5>
         <button type="button" class="btn btn-sm btn-navy" data-nav="submit-complaint"><i class="bi bi-plus-lg me-1"></i> New Complaint</button>
       </div>
-      <div class="table-responsive">
+      <div class="d-md-none p-3 d-flex flex-column gap-3">
+        ${
+          filtered.length === 0
+            ? '<div class="text-center py-4 text-muted small">No matching complaints found.</div>'
+            : filtered
+                .map(
+                  (c, idx) => `
+                  <div class="mobile-complaint-card qr-row-animate" style="--qr-row: ${Math.min(idx, 8)};">
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                      <span class="small fw-semibold text-muted tabular-nums">${esc(c.refCode)} &middot; ${esc(c.category)}</span>
+                      ${statusBadge(c.status)}
+                    </div>
+                    <div class="fw-bold text-dark mb-1">${esc(c.title)}</div>
+                    <div class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                      ${esc(c.description)}
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between gap-2 pt-2 border-top">
+                      <div class="d-flex align-items-center gap-2 small text-muted">
+                        ${proofBadge(Boolean(c.proofImage))}
+                        <span>${esc(formatFirestoreDate(c.updatedAt))}</span>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-outline-navy" data-open-detail="${esc(c.id)}">
+                        <i class="bi bi-eye me-1"></i>View
+                      </button>
+                    </div>
+                  </div>`
+                )
+                .join('')
+        }
+      </div>
+      <div class="table-responsive d-none d-md-block">
         <table class="table table-modern mb-0">
           <thead>
             <tr><th>Ref ID</th><th>Title &amp; Description</th><th>Category</th><th>Proof</th><th>Status</th><th>Updated</th><th class="text-end">Details</th></tr>
@@ -1991,8 +2109,38 @@ function renderManageComplaints(): string {
       </form>
     </div>
 
-    <div class="saas-card overflow-hidden">
-      <div class="table-responsive">
+    <div class="saas-card overflow-hidden qr-animate-in" style="--qr-stagger: 1;">
+      <div class="d-md-none p-3 d-flex flex-column gap-3">
+        ${
+          filtered.length === 0
+            ? '<div class="text-center py-4 text-muted small">No complaints match your current search or filter criteria.</div>'
+            : filtered
+                .map(
+                  (c, idx) => `
+                  <div class="mobile-complaint-card qr-row-animate" style="--qr-row: ${Math.min(idx, 8)};">
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                      <span class="small fw-semibold text-muted tabular-nums">${esc(c.refCode)} &middot; ${esc(c.category)}</span>
+                      ${statusBadge(c.status)}
+                    </div>
+                    <div class="fw-bold text-dark mb-1">${esc(c.title)}</div>
+                    <div class="small text-muted mb-2">${esc(c.studentName)} &middot; ${esc(c.studentEmail)}</div>
+                    <div class="d-flex align-items-center justify-content-between gap-2 pt-2 border-top">
+                      <div class="d-flex align-items-center gap-2 small text-muted">
+                        ${proofBadge(Boolean(c.proofImage))}
+                        <span>${esc(formatFirestoreDate(c.createdAt))}</span>
+                      </div>
+                      <div class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-light border" data-open-detail="${esc(c.id)}" title="View Details & Proof"><i class="bi bi-eye"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-open-status="${esc(c.id)}" title="Update Status"><i class="bi bi-pencil-square"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-open-delete="${esc(c.id)}" title="Delete"><i class="bi bi-trash3"></i></button>
+                      </div>
+                    </div>
+                  </div>`
+                )
+                .join('')
+        }
+      </div>
+      <div class="table-responsive d-none d-md-block">
         <table class="table table-modern mb-0">
           <thead>
             <tr><th>Ref</th><th>Complaint &amp; Category</th><th>Student</th><th>Proof</th><th>Status</th><th>Submitted</th><th class="text-end">Actions</th></tr>
@@ -2003,8 +2151,8 @@ function renderManageComplaints(): string {
                 ? '<tr><td colspan="7" class="text-center py-5 text-muted">No complaints match your current search or filter criteria.</td></tr>'
                 : filtered
                     .map(
-                      (c) => `
-                        <tr>
+                      (c, idx) => `
+                        <tr class="qr-row-animate" style="--qr-row: ${Math.min(idx, 8)};">
                           <td class="fw-semibold text-muted">${esc(c.refCode)}</td>
                           <td style="max-width:280px;"><div class="fw-semibold text-dark text-truncate">${esc(c.title)}</div><div class="text-muted small">${esc(c.category)}</div></td>
                           <td><div class="fw-medium small">${esc(c.studentName)}</div><div class="text-muted" style="font-size:0.75rem;">${esc(c.studentEmail)}</div></td>
@@ -2293,7 +2441,7 @@ function renderModals(): string {
   return `
     <!-- Complaint Detail Modal -->
     <div class="modal fade" id="previewDetailModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg" style="border-radius:16px;">
           <div class="modal-header border-bottom px-4 py-3">
             <div>
@@ -2415,7 +2563,7 @@ function renderModals(): string {
 
     <!-- Team Member Spotlight Modal -->
     <div class="modal fade" id="teamMemberModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
         <div class="modal-content border-0 shadow-lg" style="border-radius:18px; overflow:hidden;">
           <div class="modal-header border-bottom px-4 py-3">
             <div>
@@ -2753,13 +2901,19 @@ function attachEvents(): void {
   const updateStudentDashboardSearchUI = () => {
     if (!state.currentUser) return;
     const tbody = document.getElementById('studentDashTableBody');
+    const mobileList = document.getElementById('studentDashMobileList');
     const metaEl = document.getElementById('studentDashResultMeta');
     const clearBtn = document.getElementById('btnClearStudentDashSearch');
     const searchInput = document.getElementById('studentDashSearchInput') as HTMLInputElement | null;
-    if (!tbody || !metaEl || !searchInput) return;
+    if (!metaEl || !searchInput) return;
 
     const { mine, q, hasQuery, matching, rows } = getStudentDashboardDisplayData(state.currentUser.uid);
-    tbody.innerHTML = renderStudentDashboardRows(rows, mine.length, q);
+    if (tbody) {
+      tbody.innerHTML = renderStudentDashboardRows(rows, mine.length, q);
+    }
+    if (mobileList) {
+      mobileList.innerHTML = renderStudentDashboardMobileCards(rows, mine.length, q);
+    }
     metaEl.innerHTML = renderStudentDashboardMeta(mine.length, matching.length, hasQuery);
     if (clearBtn) {
       clearBtn.classList.toggle('d-none', !hasQuery);
@@ -2797,6 +2951,13 @@ function attachEvents(): void {
     if (id) openComplaintDetailModal(id);
   });
 
+  document.getElementById('studentDashMobileList')?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-open-detail]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-open-detail') || '';
+    if (id) openComplaintDetailModal(id);
+  });
+
   document.getElementById('studentFilterForm')?.addEventListener('submit', (e) => {
     e.preventDefault();
     state.studentSearch = (document.getElementById('studentSearchInput') as HTMLInputElement).value;
@@ -2824,7 +2985,7 @@ function attachEvents(): void {
   });
 
   document.querySelectorAll<HTMLElement>('[data-open-detail]').forEach((btn) => {
-    if (btn.closest('#studentDashTableBody')) return;
+    if (btn.closest('#studentDashTableBody') || btn.closest('#studentDashMobileList')) return;
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-open-detail') || '';
       openComplaintDetailModal(id);
@@ -3118,5 +3279,29 @@ function render(): void {
   attachEvents();
 }
 
+function initViewportDeviceDetector(): void {
+  const applyDeviceTraits = () => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const coarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false;
+    const hasTouch = coarsePointer || navigator.maxTouchPoints > 0;
+    const isMobile = w < 768;
+    const isTablet = !isMobile && (w < 1200 || (hasTouch && w <= 1366));
+    const device = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
+    const orientation = w >= h ? 'landscape' : 'portrait';
+
+    const rootEl = document.documentElement;
+    rootEl.setAttribute('data-device', device);
+    rootEl.setAttribute('data-orientation', orientation);
+    rootEl.setAttribute('data-touch', hasTouch ? 'true' : 'false');
+    rootEl.style.setProperty('--qr-vh', `${h * 0.01}px`);
+  };
+
+  applyDeviceTraits();
+  window.addEventListener('resize', applyDeviceTraits, { passive: true });
+  window.addEventListener('orientationchange', applyDeviceTraits, { passive: true });
+}
+
+initViewportDeviceDetector();
 render();
 initFirebaseSessionSync();
