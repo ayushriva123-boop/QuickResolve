@@ -147,13 +147,13 @@ const TEAM_MEMBERS: TeamMember[] = [
       {
         label: 'LinkedIn',
         icon: 'bi-linkedin',
-        href: 'https://www.linkedin.com/search/results/all/?keywords=Saksham+Agarwal',
+        href: 'https://www.linkedin.com/in/saksham-agarwal-972762386',
         external: true,
       },
       {
         label: 'GitHub',
         icon: 'bi-github',
-        href: 'https://github.com/search?q=Saksham+Agarwal',
+        href: 'https://github.com/agarwalsaksham537-lang',
         external: true,
       },
     ],
@@ -209,13 +209,13 @@ const TEAM_MEMBERS: TeamMember[] = [
       {
         label: 'LinkedIn',
         icon: 'bi-linkedin',
-        href: 'https://www.linkedin.com/search/results/all/?keywords=Harsha+Kanna',
+        href: 'https://www.linkedin.com/in/harsha-kanna-a99938451',
         external: true,
       },
       {
         label: 'GitHub',
         icon: 'bi-github',
-        href: 'https://github.com/search?q=Harsha+Kanna',
+        href: 'https://github.com/harshakanna13-byte',
         external: true,
       },
     ],
