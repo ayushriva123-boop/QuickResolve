@@ -373,11 +373,21 @@ function defaultDashboardFor(user: UserProfileDoc): PageKey {
 
 function readableError(err: unknown, fallback: string): string {
   if (err instanceof Error) {
+    const raw = err.message;
+    if (raw.includes('auth/popup-closed-by-user') || raw.includes('auth/cancelled-popup-request')) {
+      return 'Google Sign-In popup was closed before completing login. Please try again. (If Google showed "Error 403: access_denied", add your email as a Test User or publish the OAuth app in Google Cloud Console.)';
+    }
+    if (raw.includes('auth/popup-blocked')) {
+      return 'Sign-in popup was blocked by your browser. Please allow popups for this site and try again.';
+    }
+    if (raw.includes('auth/unauthorized-domain')) {
+      return 'This domain is not authorized in Firebase Authentication settings.';
+    }
     try {
-      const parsed = JSON.parse(err.message) as { error?: string };
+      const parsed = JSON.parse(raw) as { error?: string };
       if (parsed.error) return parsed.error;
     } catch {
-      return err.message;
+      return raw;
     }
   }
   return fallback;

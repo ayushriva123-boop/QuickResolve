@@ -32,9 +32,12 @@ export const auth = getAuth(app);
 
 export const GMAIL_SCOPES = ['https://www.googleapis.com/auth/gmail.send'];
 
-const googleProvider = new GoogleAuthProvider();
-GMAIL_SCOPES.forEach((scope) => googleProvider.addScope(scope));
-googleProvider.setCustomParameters({ prompt: 'select_account' });
+const authGoogleProvider = new GoogleAuthProvider();
+authGoogleProvider.setCustomParameters({ prompt: 'select_account' });
+
+const gmailGoogleProvider = new GoogleAuthProvider();
+GMAIL_SCOPES.forEach((scope) => gmailGoogleProvider.addScope(scope));
+gmailGoogleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // Cached strictly in memory (never in localStorage or sessionStorage)
 let cachedGmailAccessToken: string | null = null;
@@ -192,16 +195,12 @@ export function hasGmailAccessToken(): boolean {
 }
 
 export async function signInWithGoogleFirebase(): Promise<FirebaseUser> {
-  const result = await signInWithPopup(auth, googleProvider);
-  const credential = GoogleAuthProvider.credentialFromResult(result);
-  if (credential?.accessToken) {
-    cachedGmailAccessToken = credential.accessToken;
-  }
+  const result = await signInWithPopup(auth, authGoogleProvider);
   return result.user;
 }
 
 export async function requestGmailSendAccess(): Promise<string> {
-  const result = await signInWithPopup(auth, googleProvider);
+  const result = await signInWithPopup(auth, gmailGoogleProvider);
   const credential = GoogleAuthProvider.credentialFromResult(result);
   if (!credential?.accessToken) {
     throw new Error('Google did not return a Gmail sending access token.');
