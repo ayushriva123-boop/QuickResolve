@@ -91,7 +91,7 @@ const TEAM_MEMBERS: TeamMember[] = [
     roleTitle: 'Lead & Full-Stack Developer',
     responsibilityTag: 'The Lead and Developer',
     filterKey: 'lead',
-    photo: '/src/assets/images/team_ayush_shrivastava_1795449672454.jpg',
+    photo: '/assets/aistudio/image_c54e4515.png',
     bio: 'Led the end-to-end engineering of QuickResolve, turning student grievance challenges into a secure, real-time cloud platform.',
     roleSummary:
       'Owned core architecture, full-stack development, Firebase Authentication & Firestore persistence, Main Admin governance, and automated Gmail status notifications.',
@@ -110,13 +110,19 @@ const TEAM_MEMBERS: TeamMember[] = [
       {
         label: 'GitHub',
         icon: 'bi-github',
-        href: 'https://github.com/search?q=Ayush+Shrivastava',
+        href: 'https://github.com/ayushriva123-boop',
         external: true,
       },
       {
         label: 'LinkedIn',
         icon: 'bi-linkedin',
-        href: 'https://www.linkedin.com/search/results/all/?keywords=Ayush+Shrivastava',
+        href: 'https://www.linkedin.com/in/aa-ayush/',
+        external: true,
+      },
+      {
+        label: 'Portfolio',
+        icon: 'bi-globe2',
+        href: 'https://ayushshrivastava.vercel.app/',
         external: true,
       },
     ],
@@ -1296,8 +1302,8 @@ function renderTeamPage(): string {
                           .join('')}
                       </ul>
 
-                      <div class="d-flex align-items-center justify-content-between gap-2 pt-2">
-                        <div class="d-flex align-items-center gap-2">
+                      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-2">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
                           ${m.socials
                             .map(
                               (s) => `
